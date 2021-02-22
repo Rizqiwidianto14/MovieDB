@@ -24,7 +24,11 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
-                    <navigationItem key="navigationItem" id="BQD-D1-GGM"/>
+                    <navigationItem key="navigationItem" id="BQD-D1-GGM">
+                        <barButtonItem key="rightBarButtonItem" title="Item" image="bell" id="BQf-jq-P1l">
+                            <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        </barButtonItem>
+                    </navigationItem>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
@@ -125,6 +129,7 @@
         <image name="Home" width="94" height="56"/>
         <image name="Others" width="94" height="56"/>
         <image name="Popular" width="94" height="56"/>
+        <image name="bell" width="18" height="18"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
