@@ -10,7 +10,6 @@ import UIKit
 typealias MoviesDataSource = UICollectionViewDiffableDataSource<MovieManager.Section, Movie>
 
 class HomeViewController: UIViewController {
-    //https://stackoverflow.com/questions/31399166/set-image-underlay-of-transparent-navigation-bar-and-status-bar-in-swift-ios-8/42324313
     @IBOutlet weak var collectionView: UICollectionView!
     private var dataSource: MoviesDataSource!
 
