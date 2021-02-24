@@ -6,20 +6,36 @@
 //
 
 import UIKit
+import Moya
 
 typealias MoviesDataSource = UICollectionViewDiffableDataSource<MovieManager.Section, Movie>
 
 class HomeViewController: UIViewController {
+    
+    var networkProvider = NetworkManager()
+    var arrayOfMovie = [Movie]()
+    var arrayOfMovies = [Movies]()
+    var arrayOfImageURL = [String]()
+    var arrayOfImage = [UIImage]()
+    var movie: [Movie] = []
+    
     @IBOutlet weak var collectionView: UICollectionView!
     private var dataSource: MoviesDataSource!
-
+    static let MovieAPIKey = "40ddaf11b2dceca49d91ea17022d894c"
+    let provider = MoyaProvider<MovieApi>()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
         view.layer.backgroundColor = UIColor(red: 0.144, green: 0.152, blue: 0.166, alpha: 1).cgColor
+        
+        
+        fetchData()
         setUpUI()
-        setUpCollectionView()
+        
+        
     }
+    
+    
     
     func setUpUI() {
         let logoImage = UIImage.init(named: "MovieDB.png")
@@ -30,20 +46,144 @@ class HomeViewController: UIViewController {
         let negativeSpacer = UIBarButtonItem.init(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
         negativeSpacer.width = -25
         navigationItem.leftBarButtonItems = [negativeSpacer, imageItem]
-
-
-     
+        
+        
+        
+    }
+    
+    func fetchData(){
+        
+        
+        let group = DispatchGroup()
+        
+        networkProvider.getNewMovies(page: 1) { movies in
+            DispatchQueue.global(qos: .background).async(group:group){
+                group.enter()
+                self.arrayOfMovies = movies
+                
+                for index in 0 ..< self.arrayOfMovies.count{
+                    self.arrayOfImageURL.append(self.arrayOfMovies[index].backdrop)
+                }
+                print(self.arrayOfImageURL)
+                
+                group .leave()
+                print(self.arrayOfImage)
+                
+                
+            }
+            group.notify(queue: .main) { [self] in
+                
+                
+                func addImage(){
+                    var counter = 0
+                    for index in 0 ..< self.arrayOfImageURL.count{
+                        
+                        let urlString = ("https://image.tmdb.org/t/p/w500\(self.arrayOfImageURL[index])")
+                        let url = URL(string: urlString)
+                        self.fetchImage(from: url!) { image in
+                            self.movie.append(Movie(headerImage: image!))
+                            
+                            print(counter)
+                            if counter == self.arrayOfImageURL.count - 1{
+                                addDictionary()
+                                
+                            }
+                            counter += 1
+                            
+                        }
+                        
+                        
+                    }
+                    
+                    
+                }
+                
+                
+                
+                func addDictionary(){
+                    
+                    MovieManager.movies[MovieManager.Section.BANNER] = self.movie
+                    self.setUpCollectionView()
+                }
+                
+                addImage()
+                
+            }
+            
+            
+            
+            
+            
+            
+            
+            
+        }
+        
+    }
+    
+    func fetchImage(from url: URL, completion: @escaping (UIImage?) -> Void){
+        DispatchQueue.global(qos: .background).async {
+            let session = URLSession(configuration: .default)
+            DispatchQueue.global(qos: .background).async {
+                //                print("In background")
+                session.dataTask(with: URLRequest(url: url)) { data, response, error in
+                    if error != nil {
+                        print(error?.localizedDescription ?? "Unknown error")
+                    }
+                    if let data = data, let image = UIImage(data: data) {
+                        //                        print("Downloaded image")
+                        DispatchQueue.main.async {
+                            //                            print("dispatched to main")
+                            completion(image)
+                        }
+                    }
+                }.resume()
+            }
+        }
+        //        for element in self.arrayOfImageURL{
+        //            let urlString = ("https://image.tmdb.org/t/p/w500\(element)")
+        //            let url = URL(string: urlString)
+        //
+        //
+        //            URLSession.shared.dataTask(with: url!) {(data, response, error) in
+        //                if let error = error{
+        //                    print("DataTask error: \(error.localizedDescription)")
+        //                    return
+        //                }
+        //                guard let data = data else{
+        //                    // Handle Empty Data
+        //                    print("Empty Data")
+        //                    return
+        //                }
+        //
+        //                DispatchQueue.main.async {
+        //                    if let image = UIImage(data: data){
+        //                        print("here")
+        //                        self.arrayOfImage.append(image)
+        //                        MovieManager.movies[MovieManager.Section.BANNER] = [Movie(headerImage: image)]
+        //
+        //                    }
+        //                }
+        //
+        //
+        //            }.resume()
+        //            self.setUpCollectionView()
+        //        }
+        
     }
     
     func setUpCollectionView(){
-        collectionView.register(TitleHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: TitleHeaderView.reuseIdentifier)
-        collectionView.collectionViewLayout = configureCollectionViewLayout()
-        configureDataSource()
-        configureSnapshot()
-        collectionView.delegate = self
+        // MARK: - Nmbahin nya disini-
+        
+        
+        self.collectionView.register(TitleHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: TitleHeaderView.reuseIdentifier)
+        self.collectionView.collectionViewLayout = self.configureCollectionViewLayout()
+        self.configureDataSource()
+        self.configureSnapshot()
+        self.collectionView.delegate = self
     }
-
-
+    
+    
 }
 // MARK: - Collection View -
 extension HomeViewController{
@@ -87,24 +227,24 @@ extension HomeViewController{
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         item.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 0)
-
+        
         //create group
         let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.3), heightDimension: .fractionalHeight(0.22))
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
-
+        
         //create section
         let section = NSCollectionLayoutSection(group: group)
         section.orthogonalScrollingBehavior = .continuous
         section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
-
+        
         section.boundarySupplementaryItems = getHeader()
-
+        
         return section
     }
     private func getHeader() -> [NSCollectionLayoutBoundarySupplementaryItem] {
         let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(44))
         let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: headerSize, elementKind: UICollectionView.elementKindSectionHeader, alignment: .topLeading)
-
+        
         return [sectionHeader]
     }
     
@@ -117,7 +257,7 @@ extension HomeViewController {
         dataSource = MoviesDataSource(collectionView: collectionView) { (collectionView: UICollectionView, indexPath: IndexPath, movie: Movie) -> UICollectionViewCell? in
             
             let reuseIdentifier: String
-
+            
             switch indexPath.section {
             case 0: reuseIdentifier =  BannerCell.reuseIdentifier
             default: reuseIdentifier = RecomendationsCell.reuseIdentifier
@@ -127,7 +267,7 @@ extension HomeViewController {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as? MovieCell else {
                 return nil
             }
-
+            
             let section = MovieManager.Section.allCases[indexPath.section]
             cell.showMovie(movie: MovieManager.movies[section]?[indexPath.item])
             
@@ -140,7 +280,6 @@ extension HomeViewController {
                                                                 , withReuseIdentifier: TitleHeaderView.reuseIdentifier, for: indextPath) as? TitleHeaderView {
                 let section = self.dataSource.snapshot().sectionIdentifiers[indextPath.section]
                 headerSupplementaryView.textLabel.text = section.rawValue
-                
                 return headerSupplementaryView
             }
             return nil
@@ -158,7 +297,7 @@ extension HomeViewController {
         
         dataSource.apply(currentSnapshot, animatingDifferences: false)
     }
-
+    
 }
 
 
@@ -166,6 +305,6 @@ extension HomeViewController {
 extension HomeViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let movie = dataSource.itemIdentifier(for: indexPath)
-        print(movie?.title ?? "Movietitle is nil")
+        //        print(movie?.title ?? "Movietitle is nil")
     }
 }

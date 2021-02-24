@@ -10,9 +10,10 @@ import UIKit
 class BannerCell: UICollectionViewCell, MovieCell {
     @IBOutlet weak var bannerImage: UIImageView!
     static let reuseIdentifier = String(describing: BannerCell.self)
-
+    
     func showMovie(movie: Movie?) {
         bannerImage.image = movie?.headerImage
     }
+    
     
 }
