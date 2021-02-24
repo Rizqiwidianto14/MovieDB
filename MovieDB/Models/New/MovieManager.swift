@@ -10,6 +10,7 @@ import Foundation
 struct MovieManager {
     enum Section: String, CaseIterable {
         case BANNER = "Banner"
+        case POPULAR = "Popular"
 
     }
     

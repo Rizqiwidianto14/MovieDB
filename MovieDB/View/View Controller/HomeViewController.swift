@@ -15,9 +15,10 @@ class HomeViewController: UIViewController {
     var networkProvider = NetworkManager()
     var arrayOfMovie = [Movie]()
     var arrayOfMovies = [Movies]()
-    var arrayOfImageURL = [String]()
-    var arrayOfImage = [UIImage]()
-    var movie: [Movie] = []
+    var bannerURL = [String]()
+    var posterURL = [String]()
+    var banner: [Movie] = []
+    var poster: [Movie] = []
     
     @IBOutlet weak var collectionView: UICollectionView!
     private var dataSource: MoviesDataSource!
@@ -61,31 +62,56 @@ class HomeViewController: UIViewController {
                 group.enter()
                 self.arrayOfMovies = movies
                 
-                for index in 0 ..< self.arrayOfMovies.count{
-                    self.arrayOfImageURL.append(self.arrayOfMovies[index].backdrop)
+                for index in 0 ..< 3{
+                    self.bannerURL.append(self.arrayOfMovies[index].backdrop)
                 }
-                print(self.arrayOfImageURL)
+                
+                for index in 0 ..< 10{
+                    self.posterURL.append(self.arrayOfMovies[index].posterPath)
+                }
+                
                 
                 group .leave()
-                print(self.arrayOfImage)
                 
                 
             }
             group.notify(queue: .main) { [self] in
                 
-                
-                func addImage(){
+                func addPoster(){
                     var counter = 0
-                    for index in 0 ..< self.arrayOfImageURL.count{
+                    for index in 0 ..< self.posterURL.count{
                         
-                        let urlString = ("https://image.tmdb.org/t/p/w500\(self.arrayOfImageURL[index])")
+                        let urlString = ("https://image.tmdb.org/t/p/w500\(self.posterURL[index])")
                         let url = URL(string: urlString)
                         self.fetchImage(from: url!) { image in
-                            self.movie.append(Movie(headerImage: image!))
+                            self.poster.append(Movie(thumbnail: image!))
                             
                             print(counter)
-                            if counter == self.arrayOfImageURL.count - 1{
-                                addDictionary()
+                            if counter == self.posterURL.count - 1{
+                                addPosterImage()
+                                
+                            }
+                            counter += 1
+                            
+                        }
+                        
+                        
+                    }
+                }
+                
+                
+                func addBanner(){
+                    var counter = 0
+                    for index in 0 ..< self.bannerURL.count{
+                        
+                        let urlString = ("https://image.tmdb.org/t/p/w500\(self.bannerURL[index])")
+                        let url = URL(string: urlString)
+                        self.fetchImage(from: url!) { image in
+                            self.banner.append(Movie(headerImage: image!))
+                            
+                            print(counter)
+                            if counter == self.bannerURL.count - 1{
+                                addBannerImage()
                                 
                             }
                             counter += 1
@@ -100,14 +126,18 @@ class HomeViewController: UIViewController {
                 
                 
                 
-                func addDictionary(){
-                    
-                    MovieManager.movies[MovieManager.Section.BANNER] = self.movie
+                func addBannerImage(){
+                    MovieManager.movies[MovieManager.Section.BANNER] = self.banner
                     self.setUpCollectionView()
                 }
                 
-                addImage()
+                func addPosterImage(){
+                    MovieManager.movies[MovieManager.Section.POPULAR] = self.poster
+                    self.setUpCollectionView()
+                }
                 
+                addBanner()
+                addPoster()
             }
             
             

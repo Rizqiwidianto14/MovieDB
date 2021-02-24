@@ -13,6 +13,6 @@ class RecomendationsCell: UICollectionViewCell, MovieCell{
     @IBOutlet weak var recomendationImage: UIImageView!
     static let reuseIdentifier = String(describing: RecomendationsCell.self)
     func showMovie(movie: Movie?) {
-//        recomendationImage.image = movie?.thumbnail
+        recomendationImage.image = movie?.thumbnail
     }
 }

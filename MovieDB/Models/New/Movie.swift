@@ -11,9 +11,12 @@ import UIKit
 
 struct Movie: Hashable {
     let headerImage: UIImage?
+    let thumbnail: UIImage?
+    
     let identifier = UUID().uuidString
-    init(headerImage: UIImage? = nil) {
+    init(headerImage: UIImage? = nil,thumbnail: UIImage? = nil) {
         self.headerImage = headerImage
+        self.thumbnail = thumbnail
 
     }
     
