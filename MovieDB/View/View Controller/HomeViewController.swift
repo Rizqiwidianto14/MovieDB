@@ -17,8 +17,10 @@ class HomeViewController: UIViewController {
     var arrayOfMovies = [Movies]()
     var bannerURL = [String]()
     var posterURL = [String]()
+    var comingSoonURL = [String]()
     var banner: [Movie] = []
     var poster: [Movie] = []
+    var comingSoonPoster: [Movie] = []
     
     @IBOutlet weak var collectionView: UICollectionView!
     private var dataSource: MoviesDataSource!
@@ -53,10 +55,7 @@ class HomeViewController: UIViewController {
     }
     
     func fetchData(){
-        
-        
         let group = DispatchGroup()
-        
         networkProvider.getNewMovies(page: 1) { movies in
             DispatchQueue.global(qos: .background).async(group:group){
                 group.enter()
@@ -70,35 +69,20 @@ class HomeViewController: UIViewController {
                     self.posterURL.append(self.arrayOfMovies[index].posterPath)
                 }
                 
+                for index in 10 ..< 20{
+                    self.comingSoonURL.append(self.arrayOfMovies[index].posterPath)
+                }
+                
+                
+                
+                
+                
                 
                 group .leave()
                 
                 
             }
             group.notify(queue: .main) { [self] in
-                
-                func addPoster(){
-                    var counter = 0
-                    for index in 0 ..< self.posterURL.count{
-                        
-                        let urlString = ("https://image.tmdb.org/t/p/w500\(self.posterURL[index])")
-                        let url = URL(string: urlString)
-                        self.fetchImage(from: url!) { image in
-                            self.poster.append(Movie(thumbnail: image!))
-                            
-                            print(counter)
-                            if counter == self.posterURL.count - 1{
-                                addPosterImage()
-                                
-                            }
-                            counter += 1
-                            
-                        }
-                        
-                        
-                    }
-                }
-                
                 
                 func addBanner(){
                     var counter = 0
@@ -124,6 +108,53 @@ class HomeViewController: UIViewController {
                     
                 }
                 
+                func addPoster(){
+                    var counter = 0
+                    for index in 0 ..< self.posterURL.count{
+                        
+                        let urlString = ("https://image.tmdb.org/t/p/w500\(self.posterURL[index])")
+                        let url = URL(string: urlString)
+                        self.fetchImage(from: url!) { image in
+                            self.poster.append(Movie(thumbnail: image!))
+                            
+                            print(counter)
+                            if counter == self.posterURL.count - 1{
+                                addPosterImage()
+                                
+                            }
+                            counter += 1
+                            
+                        }
+                        
+                        
+                    }
+                }
+                
+                func addComingSoon(){
+                    var counter = 0
+                    for index in 0 ..< self.comingSoonURL.count{
+                        
+                        let urlString = ("https://image.tmdb.org/t/p/w500\(self.comingSoonURL[index])")
+                        let url = URL(string: urlString)
+                        self.fetchImage(from: url!) { image in
+                            self.comingSoonPoster.append(Movie(thumbnail: image!))
+                            
+                            print(counter)
+                            if counter == self.comingSoonURL.count - 1{
+                                addComingSoonImage()
+                                
+                            }
+                            counter += 1
+                            
+                        }
+                        
+                        
+                    }
+                }
+                
+                
+  
+                
                 
                 
                 func addBannerImage(){
@@ -135,9 +166,14 @@ class HomeViewController: UIViewController {
                     MovieManager.movies[MovieManager.Section.POPULAR] = self.poster
                     self.setUpCollectionView()
                 }
+                func addComingSoonImage(){
+                    MovieManager.movies[MovieManager.Section.COMINGSOON] = self.comingSoonPoster
+                    self.setUpCollectionView()
+                }
                 
                 addBanner()
                 addPoster()
+                addComingSoon()
             }
             
             
@@ -170,35 +206,6 @@ class HomeViewController: UIViewController {
                 }.resume()
             }
         }
-        //        for element in self.arrayOfImageURL{
-        //            let urlString = ("https://image.tmdb.org/t/p/w500\(element)")
-        //            let url = URL(string: urlString)
-        //
-        //
-        //            URLSession.shared.dataTask(with: url!) {(data, response, error) in
-        //                if let error = error{
-        //                    print("DataTask error: \(error.localizedDescription)")
-        //                    return
-        //                }
-        //                guard let data = data else{
-        //                    // Handle Empty Data
-        //                    print("Empty Data")
-        //                    return
-        //                }
-        //
-        //                DispatchQueue.main.async {
-        //                    if let image = UIImage(data: data){
-        //                        print("here")
-        //                        self.arrayOfImage.append(image)
-        //                        MovieManager.movies[MovieManager.Section.BANNER] = [Movie(headerImage: image)]
-        //
-        //                    }
-        //                }
-        //
-        //
-        //            }.resume()
-        //            self.setUpCollectionView()
-        //        }
         
     }
     
