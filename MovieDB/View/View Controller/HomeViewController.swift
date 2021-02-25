@@ -7,6 +7,7 @@
 
 import UIKit
 import Moya
+import RxSwift
 
 typealias MoviesDataSource = UICollectionViewDiffableDataSource<MovieManager.Section, Movie>
 
@@ -30,12 +31,8 @@ class HomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.layer.backgroundColor = UIColor(red: 0.144, green: 0.152, blue: 0.166, alpha: 1).cgColor
-        
-        
         fetchData()
         setUpUI()
-        
-        
     }
     
     
@@ -49,8 +46,6 @@ class HomeViewController: UIViewController {
         let negativeSpacer = UIBarButtonItem.init(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
         negativeSpacer.width = -25
         navigationItem.leftBarButtonItems = [negativeSpacer, imageItem]
-        
-        
         
     }
     
@@ -72,14 +67,9 @@ class HomeViewController: UIViewController {
                 for index in 10 ..< 20{
                     self.comingSoonURL.append(self.arrayOfMovies[index].posterPath)
                 }
-                
-                
-                
-                
-                
-                
+
                 group .leave()
-                
+
                 
             }
             group.notify(queue: .main) { [self] in
@@ -145,18 +135,11 @@ class HomeViewController: UIViewController {
                                 
                             }
                             counter += 1
-                            
                         }
-                        
-                        
                     }
                 }
                 
-                
-  
-                
-                
-                
+
                 func addBannerImage(){
                     MovieManager.movies[MovieManager.Section.BANNER] = self.banner
                     self.setUpCollectionView()
@@ -175,13 +158,6 @@ class HomeViewController: UIViewController {
                 addPoster()
                 addComingSoon()
             }
-            
-            
-            
-            
-            
-            
-            
             
         }
         
@@ -342,6 +318,10 @@ extension HomeViewController {
 extension HomeViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let movie = dataSource.itemIdentifier(for: indexPath)
-        //        print(movie?.title ?? "Movietitle is nil")
+        let detailVC = storyboard?.instantiateViewController(identifier: "DetailViewController") as! DetailViewController
+        present(detailVC, animated: true, completion: nil)
+        
+
+   
     }
 }

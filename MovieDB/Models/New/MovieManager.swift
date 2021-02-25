@@ -32,27 +32,3 @@ struct MovieManager {
     
 }
 
-//class urlToImage{
-//    private func getImageDataFrom(url:URL){
-//        URLSession.shared.dataTask(with: url) {(data, response, error) in
-//            if let error = error{
-//                print("DataTask error: \(error.localizedDescription)")
-//                return
-//            }
-//            guard let data = data else{
-//                // Handle Empty Data
-//                print("Empty Data")
-//                return
-//            }
-//            DispatchQueue.main.async {
-//                if let image = UIImage(data: data){
-//                    self.productImage.image = image
-//                }
-//            }
-//            
-//        }.resume()
-//    }
-//
-//    
-//}
-

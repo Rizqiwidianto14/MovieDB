@@ -24,7 +24,7 @@ extension MovieApi: TargetType {
     var path: String {
         switch self {
         case .recommended(let id):
-            return "\(id)/recommendations"
+            return "\(id)"
         case .popular:
             return "popular"
         case .newMovies:
@@ -46,7 +46,7 @@ extension MovieApi: TargetType {
     var task: Task {
         switch self {
         case .recommended, .video:
-            return .requestParameters(parameters: ["api_key":  NetworkManager.MovieAPIKey], encoding: URLEncoding.queryString)
+            return .requestParameters(parameters: ["api_key":  NetworkDetailManager.MovieAPIKey], encoding: URLEncoding.queryString)
         case .popular(let page), .newMovies(let page):
             return .requestParameters(parameters: ["page":page, "api_key": NetworkManager.MovieAPIKey], encoding: URLEncoding.queryString)
         }
