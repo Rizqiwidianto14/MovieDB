@@ -9,6 +9,9 @@ import UIKit
 import Moya
 import RxSwift
 
+
+
+
 class DetailViewController: UIViewController {
 
     @IBOutlet weak var detailImage: UIImageView!
@@ -17,6 +20,7 @@ class DetailViewController: UIViewController {
     
     var networkProvider = NetworkDetailManager()
     var detailViewModel = DetailViewModel()
+    private let disposeBag = DisposeBag()
     
     
     override func viewDidLoad() {
@@ -28,6 +32,7 @@ class DetailViewController: UIViewController {
         navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
         navigationController?.navigationBar.isTranslucent = true
         view.layer.backgroundColor = UIColor(red: 0.144, green: 0.152, blue: 0.166, alpha: 1).cgColor
+        
         networkProvider.getDetailInfo(id: 520763) { (moviedetail) in
             print(moviedetail)
             let urlString = ("https://image.tmdb.org/t/p/w500\(moviedetail.poster_path)")
@@ -37,7 +42,7 @@ class DetailViewController: UIViewController {
             
             
             
-
+            
             self.detailViewModel.fetchImage(from: url!) { image in
                 self.detailImage.image = image
             }
