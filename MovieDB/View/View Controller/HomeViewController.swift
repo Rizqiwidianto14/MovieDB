@@ -14,7 +14,6 @@ typealias MoviesDataSource = UICollectionViewDiffableDataSource<MovieManager.Sec
 class HomeViewController: UIViewController {
     
     var networkProvider = NetworkManager()
-    var arrayOfMovie = [Movie]()
     var arrayOfMovies = [Movies]()
     var bannerURL = [String]()
     var posterURL = [String]()
@@ -22,6 +21,8 @@ class HomeViewController: UIViewController {
     var banner: [Movie] = []
     var poster: [Movie] = []
     var comingSoonPoster: [Movie] = []
+    
+    var homeViewModel = HomeViewModel()
     
     @IBOutlet weak var collectionView: UICollectionView!
     private var dataSource: MoviesDataSource!
@@ -34,6 +35,7 @@ class HomeViewController: UIViewController {
         fetchData()
         setUpUI()
     }
+    
     
     
     
@@ -67,78 +69,16 @@ class HomeViewController: UIViewController {
                 for index in 10 ..< 20{
                     self.comingSoonURL.append(self.arrayOfMovies[index].posterPath)
                 }
-
+                
                 group .leave()
-
+                
                 
             }
             group.notify(queue: .main) { [self] in
                 
-                func addBanner(){
-                    var counter = 0
-                    for index in 0 ..< self.bannerURL.count{
-                        
-                        let urlString = ("https://image.tmdb.org/t/p/w500\(self.bannerURL[index])")
-                        let url = URL(string: urlString)
-                        self.fetchImage(from: url!) { image in
-                            self.banner.append(Movie(headerImage: image!))
-                            
-                            print(counter)
-                            if counter == self.bannerURL.count - 1{
-                                addBannerImage()
-                                
-                            }
-                            counter += 1
-                            
-                        }
-                        
-                        
-                    }
-                    
-                    
-                }
-                
-                func addPoster(){
-                    var counter = 0
-                    for index in 0 ..< self.posterURL.count{
-                        
-                        let urlString = ("https://image.tmdb.org/t/p/w500\(self.posterURL[index])")
-                        let url = URL(string: urlString)
-                        self.fetchImage(from: url!) { image in
-                            self.poster.append(Movie(thumbnail: image!))
-                            
-                            print(counter)
-                            if counter == self.posterURL.count - 1{
-                                addPosterImage()
-                                
-                            }
-                            counter += 1
-                            
-                        }
-                        
-                        
-                    }
-                }
-                
-                func addComingSoon(){
-                    var counter = 0
-                    for index in 0 ..< self.comingSoonURL.count{
-                        
-                        let urlString = ("https://image.tmdb.org/t/p/w500\(self.comingSoonURL[index])")
-                        let url = URL(string: urlString)
-                        self.fetchImage(from: url!) { image in
-                            self.comingSoonPoster.append(Movie(thumbnail: image!))
-                            
-                            print(counter)
-                            if counter == self.comingSoonURL.count - 1{
-                                addComingSoonImage()
-                            }
-                            counter += 1
-                        }
-                    }
-                }
-                
 
+                
+                
                 func addBannerImage(){
                     MovieManager.movies[MovieManager.Section.BANNER] = self.banner
                     self.setUpCollectionView()
@@ -152,7 +92,6 @@ class HomeViewController: UIViewController {
                     MovieManager.movies[MovieManager.Section.COMINGSOON] = self.comingSoonPoster
                     self.setUpCollectionView()
                 }
-                
                 addBanner()
                 addPoster()
                 addComingSoon()
@@ -162,40 +101,15 @@ class HomeViewController: UIViewController {
         
     }
     
-    func fetchImage(from url: URL, completion: @escaping (UIImage?) -> Void){
-        DispatchQueue.global(qos: .background).async {
-            let session = URLSession(configuration: .default)
-            DispatchQueue.global(qos: .background).async {
-                //                print("In background")
-                session.dataTask(with: URLRequest(url: url)) { data, response, error in
-                    if error != nil {
-                        print(error?.localizedDescription ?? "Unknown error")
-                    }
-                    if let data = data, let image = UIImage(data: data) {
-                        //                        print("Downloaded image")
-                        DispatchQueue.main.async {
-                            //                            print("dispatched to main")
-                            completion(image)
-                        }
-                    }
-                }.resume()
-            }
-        }
-        
-    }
     
     func setUpCollectionView(){
         // MARK: - Nmbahin nya disini-
-        
-        
         self.collectionView.register(TitleHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: TitleHeaderView.reuseIdentifier)
         self.collectionView.collectionViewLayout = self.configureCollectionViewLayout()
         self.configureDataSource()
         self.configureSnapshot()
         self.collectionView.delegate = self
     }
-    
-    
 }
 // MARK: - Collection View -
 extension HomeViewController{
@@ -209,7 +123,6 @@ extension HomeViewController{
             default:
                 section = self.getRecomendationsSection()
             }
-            
             return section
         }
         
@@ -316,11 +229,12 @@ extension HomeViewController {
 // MARK: - UIColeectionViewDelegate -
 extension HomeViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        print(arrayOfMovies[indexPath.row].id)
         let movie = dataSource.itemIdentifier(for: indexPath)
         let detailVC = storyboard?.instantiateViewController(identifier: "DetailViewController") as! DetailViewController
         present(detailVC, animated: true, completion: nil)
         
-
-   
+        
+        
     }
 }

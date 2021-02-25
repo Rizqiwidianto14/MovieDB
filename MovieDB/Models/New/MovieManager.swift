@@ -12,23 +12,7 @@ struct MovieManager {
         case BANNER = "Banner"
         case POPULAR = "Popular"
         case COMINGSOON = "Coming Soon"
-
-
     }
-    
-
     static var movies = [Section: [Movie]]()
-    
-    
-    
-//        static var movies = [
-//            Section.BANNER:  [
-//                //harusnya masuk sini udah image
-//                Movie(headerImage: #imageLiteral(resourceName: "station19")),
-//                Movie(headerImage: #imageLiteral(resourceName: "michelle_wolf")),
-//                Movie(headerImage: #imageLiteral(resourceName: "knock_down"))
-//            ]
-//        ]
-    
 }
 
