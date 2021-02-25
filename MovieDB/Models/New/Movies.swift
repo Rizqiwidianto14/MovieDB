@@ -62,18 +62,17 @@ extension Movies: Decodable {
 struct MovieDetail: Decodable{
     let overview: String
     let original_title: String
+    let poster_path: String
 }
 
 
 
 
 struct MovieGenre: Decodable {
-    
     let name: String
 }
 
 struct MovieCredit: Decodable {
-    
     let cast: [MovieCast]
     let crew: [MovieCrew]
 }

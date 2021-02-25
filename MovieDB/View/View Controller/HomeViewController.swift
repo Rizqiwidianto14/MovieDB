@@ -132,7 +132,6 @@ class HomeViewController: UIViewController {
                             print(counter)
                             if counter == self.comingSoonURL.count - 1{
                                 addComingSoonImage()
-                                
                             }
                             counter += 1
                         }
